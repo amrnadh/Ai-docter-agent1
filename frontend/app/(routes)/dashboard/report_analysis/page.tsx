@@ -164,8 +164,8 @@ function ReportAnalysis() {
   return (
     <div className='p-6 max-w-7xl mx-auto'>
       <div className='flex items-center gap-3 mb-8'>
-        <div className="p-3 bg-blue-100 rounded-full">
-          <FileText className="w-6 h-6 text-blue-600" />
+        <div className="p-3 bg-blue-100 dark:bg-blue-500/15 rounded-full">
+          <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
         </div>
         <h1 className='text-2xl font-bold'>Blood Report Analyst</h1>
       </div>
@@ -176,11 +176,11 @@ function ReportAnalysis() {
         <div className='lg:col-span-2 space-y-8'>
 
           {/* 1. Upload Section */}
-          <div className='bg-white rounded-xl p-6 border shadow-sm'>
-            <div className='border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors'>
+          <div className='bg-white dark:bg-[#141414] rounded-xl p-6 border shadow-sm'>
+            <div className='border-2 border-dashed border-gray-300 dark:border-white/15 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors'>
               <UploadCloud className='w-12 h-12 text-blue-500 mb-4' />
               <h2 className='text-lg font-semibold'>Upload Blood Report (PDF)</h2>
-              <p className='text-gray-500 text-sm mb-4'>Max size 5MB</p>
+              <p className='text-gray-500 dark:text-gray-400 text-sm mb-4'>Max size 5MB</p>
 
               <Input
                 type="file"
@@ -192,8 +192,8 @@ function ReportAnalysis() {
 
             {/* Optional Patient Info */}
             {file && (
-              <div className='mt-6 p-4 bg-gray-50 rounded-lg'>
-                <h3 className='text-sm font-medium text-gray-700 mb-3'>Patient Information (Optional)</h3>
+              <div className='mt-6 p-4 bg-gray-50 dark:bg-white/[0.04] rounded-lg'>
+                <h3 className='text-sm font-medium text-gray-700 dark:text-gray-200 mb-3'>Patient Information (Optional)</h3>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
                   <Input
                     placeholder="Patient Name"
@@ -231,12 +231,12 @@ function ReportAnalysis() {
 
           {/* 2. Analysis Results */}
           {analysis && (
-            <div className='bg-white p-6 rounded-xl border shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500'>
+            <div className='bg-white dark:bg-[#141414] p-6 rounded-xl border shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500'>
               <div className='flex items-center gap-2 mb-4 border-b pb-4'>
-                <FileText className='text-green-600' />
+                <FileText className='text-green-600 dark:text-green-400' />
                 <h2 className='text-xl font-bold'>Analysis Results</h2>
               </div>
-              <div className='prose prose-blue max-w-none text-gray-700 leading-relaxed'>
+              <div className='prose prose-blue max-w-none text-gray-700 dark:text-gray-200 leading-relaxed'>
                 <ReactMarkdown>{analysis}</ReactMarkdown>
               </div>
             </div>
@@ -244,10 +244,10 @@ function ReportAnalysis() {
 
           {/* 3. Follow-up Chat System */}
           {analysis && activeReportId && (
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden flex flex-col h-[600px]">
-              <div className="p-4 border-b bg-gray-50">
+            <div className="bg-white dark:bg-[#141414] rounded-xl border shadow-sm overflow-hidden flex flex-col h-[600px]">
+              <div className="p-4 border-b bg-gray-50 dark:bg-white/[0.04]">
                 <h3 className="font-semibold flex items-center gap-2">
-                  <Bot className="w-5 h-5 text-blue-600" />
+                  <Bot className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   Ask questions about this report
                 </h3>
               </div>
@@ -265,7 +265,7 @@ function ReportAnalysis() {
                   <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`p-3 rounded-lg max-w-[80%] ${msg.role === 'user'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-800'
+                      : 'bg-gray-100 dark:bg-white/[0.07] text-gray-800 dark:text-gray-100'
                       }`}>
                       {msg.content}
                     </div>
@@ -280,7 +280,7 @@ function ReportAnalysis() {
               </div>
 
               {/* Input Area */}
-              <div className="p-4 border-t bg-gray-50 flex gap-2">
+              <div className="p-4 border-t bg-gray-50 dark:bg-white/[0.04] flex gap-2">
                 <Input
                   placeholder="Type your question..."
                   value={chatInput}
@@ -298,9 +298,9 @@ function ReportAnalysis() {
 
         {/* RIGHT COLUMN: Sidebar - Previous Reports */}
         <div className='lg:col-span-1'>
-          <div className='bg-white p-6 rounded-xl border shadow-sm sticky top-6'>
+          <div className='bg-white dark:bg-[#141414] p-6 rounded-xl border shadow-sm sticky top-6'>
             <div className='flex items-center gap-2 mb-4'>
-              <History className='text-blue-600' />
+              <History className='text-blue-600 dark:text-blue-400' />
               <h2 className='text-xl font-bold'>History</h2>
             </div>
 
@@ -309,7 +309,7 @@ function ReportAnalysis() {
                 <Loader2 className='animate-spin text-gray-400' />
               </div>
             ) : savedReports.length === 0 ? (
-              <p className='text-gray-500 text-sm text-center py-8'>No previous reports</p>
+              <p className='text-gray-500 dark:text-gray-400 text-sm text-center py-8'>No previous reports</p>
             ) : (
               <div className='space-y-3 max-h-[600px] overflow-y-auto pr-2'>
                 {savedReports.map((report) => (
@@ -317,20 +317,20 @@ function ReportAnalysis() {
                     key={report.id}
                     onClick={() => handleSelectReport(report)}
                     className={`p-4 rounded-lg border cursor-pointer transition-all hover:shadow-md ${activeReportId === report.id
-                      ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 ring-1 ring-blue-500'
+                      : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
                       }`}
                   >
                     <div className='flex items-start gap-3'>
-                      <div className="bg-gray-100 p-2 rounded-lg">
-                        <FileText className='w-5 h-5 text-gray-600' />
+                      <div className="bg-gray-100 dark:bg-white/[0.07] p-2 rounded-lg">
+                        <FileText className='w-5 h-5 text-gray-600 dark:text-gray-300' />
                       </div>
                       <div className='flex-1 min-w-0'>
-                        <p className='font-medium text-sm truncate text-gray-900'>{report.file_name}</p>
+                        <p className='font-medium text-sm truncate text-gray-900 dark:text-gray-50'>{report.file_name}</p>
                         {report.patient_name && (
-                          <p className='text-xs text-gray-500 truncate'>{report.patient_name}</p>
+                          <p className='text-xs text-gray-500 dark:text-gray-400 truncate'>{report.patient_name}</p>
                         )}
-                        <div className='flex items-center gap-2 mt-1 text-xs text-gray-500'>
+                        <div className='flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400'>
                           <Calendar className='w-3 h-3' />
                           <span>{formatDate(report.created_at)}</span>
                         </div>

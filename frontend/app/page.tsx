@@ -1,23 +1,25 @@
-import Footer from "@/components/sections/footer";
 import Header from "@/components/sections/header";
 import Hero from "@/components/sections/hero";
-import StatsBar from "@/components/sections/stats-bar";
-import BentoFeatures from "@/components/sections/bento-features";
-import Capabilities from "@/components/sections/capabilities";
-import TechStack from "@/components/sections/tech-stack";
-import CTA from "@/components/sections/cta";
+import { Features, Models, Pipeline, ProofStrip, Stack } from "@/components/sections/landing-sections";
+import Footer, { ClosingCta } from "@/components/sections/footer";
 
 export default function Home() {
   return (
-    <main>
+    <div className="min-h-screen bg-l-bg text-l-ink antialiased">
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-l-card focus:px-3 focus:py-2">
+        Skip to content
+      </a>
       <Header />
-      <Hero />
-      <StatsBar />
-      <Capabilities />
-      <BentoFeatures />
-      <TechStack />
-      <CTA />
+      <main id="main">
+        <Hero />
+        <ProofStrip />
+        <Features />
+        <Pipeline />
+        <Models />
+        <Stack />
+        <ClosingCta />
+      </main>
       <Footer />
-    </main>
+    </div>
   );
 }

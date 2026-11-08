@@ -1,162 +1,161 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowRight, Check, Code2, ShieldCheck } from "lucide-react";
+import { author } from "@/lib/landing";
 
-// WebGL/Canvas-like background effect using pure CSS and framer-motion for performance
-function AnimatedBackground() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+const ease = [0.16, 1, 0.3, 1] as const;
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
+function TraceStep({ label, active, delay }: { label: string; active?: boolean; delay: number }) {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {/* Dynamic gradient mesh */}
-      <motion.div
-        className="absolute w-[800px] h-[800px] rounded-full blur-[100px] opacity-40 mix-blend-screen"
-        animate={{
-          x: mousePosition.x - 400,
-          y: mousePosition.y - 400,
-        }}
-        transition={{ type: "spring", bounce: 0, duration: 2 }}
-        style={{
-          background: "radial-gradient(circle, rgba(59,130,246,0.3) 0%, rgba(0,0,0,0) 70%)",
-        }}
-      />
-      <motion.div
-        className="absolute w-[600px] h-[600px] rounded-full blur-[100px] opacity-30 mix-blend-screen"
-        animate={{
-          x: mousePosition.x - 100,
-          y: mousePosition.y - 300,
-        }}
-        transition={{ type: "spring", bounce: 0, duration: 4 }}
-        style={{
-          background: "radial-gradient(circle, rgba(168,85,247,0.3) 0%, rgba(0,0,0,0) 70%)",
-        }}
-      />
-      {/* Base grid and static mesh */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-gray-100 via-white to-white dark:from-[#050b14] dark:via-[#020408] dark:to-[#020408]" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_10%,transparent_100%)]" />
-    </div>
-  );
-}
-
-function HeroPill() {
-  return (
-    <motion.div
-      className="relative flex w-auto items-center space-x-2 rounded-full bg-white/50 dark:bg-white/5 px-4 py-1.5 ring-1 ring-black/5 dark:ring-white/10 backdrop-blur-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_0_15px_rgba(255,255,255,0.05)] mb-8 overflow-hidden group"
-      initial={{ opacity: 0, y: -20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-    >
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-      <div className="flex items-center justify-center gap-1.5 relative z-10">
-        <Sparkles className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 animate-pulse" />
-        <span className="text-sm font-medium tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
-          Introducing MedSage AI
-        </span>
-      </div>
-    </motion.div>
-  );
-}
-
-function HeroTitles() {
-  return (
-    <div className="flex w-full max-w-[800px] flex-col space-y-6 items-center text-center relative z-10">
-      <motion.h1
-        className="text-5xl font-semibold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl text-gray-950 dark:text-white leading-[1.1]"
-        initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        transition={{
-          duration: 1.2,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-      >
-        Your intelligence. <br className="hidden sm:block" />
-        <span className="relative inline-block">
-          <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 blur-2xl opacity-20 dark:opacity-30 mix-blend-screen" />
-          <span className="relative bg-gradient-to-r from-gray-900 via-gray-700 to-gray-500 dark:from-white dark:via-gray-200 dark:to-gray-400 bg-clip-text text-transparent">
-            Amplified.
-          </span>
-        </span>
-      </motion.h1>
-
-      <motion.p
-        className="max-w-[600px] text-lg sm:text-xl font-medium tracking-tight text-gray-600 dark:text-gray-400 leading-relaxed text-balance"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          delay: 0.4,
-          duration: 1,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-      >
-        Experience a breakthrough in medical assistance. Powerful agents designed to seamlessly integrate with your workflow, making every diagnosis clearer and faster.
-      </motion.p>
-    </div>
-  );
-}
-
-function HeroCTA() {
-  const { user } = useUser();
-
-  return (
-    <motion.div
-      className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full relative z-10"
-      initial={{ opacity: 0, y: 20 }}
+    <motion.span
+      initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ delay, duration: 0.4, ease }}
+      className={
+        active
+          ? "inline-flex items-center gap-1 rounded-full bg-l-accent px-2.5 py-1 text-[11px] font-medium text-l-accent-ink"
+          : "inline-flex items-center gap-1 rounded-full border border-l-line bg-l-bg px-2.5 py-1 text-[11px] text-l-muted"
+      }
     >
-      <Link
-        href={user ? "/dashboard" : "/sign-up"}
-        className={cn(
-          buttonVariants({ size: "lg" }),
-          "group relative h-14 px-8 rounded-full text-base font-medium overflow-hidden transition-all duration-300 gap-2 bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 hover:scale-105 active:scale-95 shadow-[0_4px_14px_0_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_0_rgba(0,0,0,0.15)] dark:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-        )}
-      >
-        <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 dark:via-black/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-        <span className="relative flex items-center gap-2">
-          {user ? "Go to Dashboard" : "Start your trial"}
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-        </span>
-      </Link>
+      {!active && <Check className="size-3" aria-hidden />}
+      {label}
+    </motion.span>
+  );
+}
 
-      <Link
-        href="/about"
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "lg" }),
-          "h-14 px-8 rounded-full text-base font-medium tracking-tight hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-        )}
+const probs = [
+  { label: "Glioma", p: 0.91 },
+  { label: "Meningioma", p: 0.05 },
+  { label: "Pituitary", p: 0.03 },
+  { label: "No tumor", p: 0.01 },
+];
+
+/** Illustrative product snapshot built from real UI concepts, no screenshots. */
+function HeroVisual() {
+  const reduce = useReducedMotion();
+  return (
+    <div className="relative mx-auto w-full max-w-md lg:max-w-none" aria-label="Example of an assistant answer and an MRI result">
+      <div className="rounded-2xl border border-l-line bg-l-card p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_40px_-12px_rgba(0,0,0,0.12)] sm:p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-xs font-medium text-l-muted">Assistant</span>
+          <span className="font-mono text-[10px] uppercase tracking-wider text-l-muted">example</span>
+        </div>
+
+        <div className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-l-ink px-3.5 py-2 text-sm text-l-bg">
+          I take warfarin. Is ibuprofen OK for a headache?
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-1.5">
+          <TraceStep label="Guardrail" delay={0.5} />
+          <TraceStep label="Router" delay={0.7} />
+          <TraceStep label="Drug-interaction agent" active delay={0.9} />
+        </div>
+
+        <motion.div
+          initial={reduce ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.5 }}
+          className="mt-3 rounded-2xl rounded-bl-md border border-l-line bg-l-bg px-3.5 py-3 text-sm leading-relaxed text-l-ink"
+        >
+          <span className="mb-1.5 inline-flex items-center rounded bg-l-warn/15 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-l-warn">
+            Severe interaction
+          </span>
+          <p>
+            NSAIDs like ibuprofen raise bleeding risk with warfarin. Paracetamol is usually the safer choice. Check with your doctor before combining them.
+          </p>
+        </motion.div>
+      </div>
+
+      <motion.div
+        initial={reduce ? false : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.5, duration: 0.6, ease }}
+        className="relative mt-4 rounded-2xl border border-l-line bg-l-card p-4 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.12)] sm:-mt-6 sm:ml-12 sm:p-5"
       >
-        Learn more
-      </Link>
-    </motion.div>
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-xs font-medium text-l-muted">Brain MRI · ensemble</span>
+          <span className="font-mono text-[10px] text-l-muted">uncertainty 0.07</span>
+        </div>
+        <ul className="space-y-2">
+          {probs.map((r, i) => (
+            <li key={r.label} className="grid grid-cols-[88px_1fr_40px] items-center gap-3 text-xs">
+              <span className={i === 0 ? "font-medium text-l-ink" : "text-l-muted"}>{r.label}</span>
+              <span className="h-1.5 overflow-hidden rounded-full bg-l-line">
+                <motion.span
+                  className={i === 0 ? "block h-full rounded-full bg-l-accent" : "block h-full rounded-full bg-l-muted/50"}
+                  initial={reduce ? false : { width: 0 }}
+                  animate={{ width: `${Math.max(r.p * 100, 2)}%` }}
+                  transition={{ delay: 1.8 + i * 0.08, duration: 0.8, ease }}
+                />
+              </span>
+              <span className="text-right font-mono tabular-nums text-l-muted">{Math.round(r.p * 100)}%</span>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    </div>
   );
 }
 
 export default function Hero() {
-  return (
-    <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden transition-colors duration-500">
-      <AnimatedBackground />
+  const { user } = useUser();
+  const reduce = useReducedMotion();
+  const fade = (delay: number) =>
+    reduce ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { delay, duration: 0.7, ease } };
 
-      <div className="relative z-10 flex w-full flex-col items-center justify-center px-4 md:px-6 py-20">
-        <HeroPill />
-        <HeroTitles />
-        <HeroCTA />
+  return (
+    <section className="relative overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(var(--l-line)_1px,transparent_1px),linear-gradient(90deg,var(--l-line)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_70%_60%_at_30%_0%,#000_20%,transparent_75%)] opacity-60"
+      />
+      <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-4 pb-20 pt-12 sm:px-6 md:pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pb-28">
+        <div>
+          <motion.p {...fade(0)} className="mb-5 inline-flex items-center gap-2 rounded-full border border-l-line bg-l-card px-3 py-1 text-xs font-medium text-l-muted">
+            <span className="size-1.5 rounded-full bg-l-accent" aria-hidden />
+            Multi-agent clinical AI · open source
+          </motion.p>
+
+          <motion.h1 {...fade(0.08)} className="text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.035em] text-l-ink sm:text-5xl lg:text-6xl">
+            Eight AI specialists. <span className="text-l-accent">One second opinion.</span>
+          </motion.h1>
+
+          <motion.p {...fade(0.16)} className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-l-muted">
+            MedSage routes every question, scan and lab report to the right agent: a RAG agent grounded in clinical papers, CNN ensembles for MRI and X-ray, and triage and drug-safety agents that know your health profile.
+          </motion.p>
+
+          <motion.div {...fade(0.24)} className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href={user ? "/dashboard" : "/sign-up"}
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-l-ink px-6 text-[15px] font-medium text-l-bg transition-opacity hover:opacity-90"
+            >
+              {user ? "Open dashboard" : "Try the live demo"}
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+            </Link>
+            <a
+              href="#pipeline"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-l-line bg-l-card px-6 text-[15px] font-medium text-l-ink transition-colors hover:border-l-muted/40"
+            >
+              See how it works
+            </a>
+          </motion.div>
+
+          <motion.ul {...fade(0.32)} className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-l-muted">
+            <li className="flex items-center gap-2"><ShieldCheck className="size-4 text-l-accent" aria-hidden />Guardrails on input and output</li>
+            {author.source && (
+              <li>
+                <a href={author.source} target="_blank" rel="noreferrer" className="flex items-center gap-2 underline-offset-4 hover:text-l-ink hover:underline">
+                  <Code2 className="size-4 text-l-accent" aria-hidden />View the source
+                </a>
+              </li>
+            )}
+          </motion.ul>
+        </div>
+
+        <HeroVisual />
       </div>
     </section>
   );

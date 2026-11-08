@@ -271,3 +271,39 @@
     @apply bg-background text-foreground;
   }
 }
+/* ── Landing page palette ─────────────────────────────────────
+   Clinical neutrals + one teal accent. Scoped to the marketing
+   page; the dashboard keeps the shadcn tokens above. */
+:root {
+  --l-bg: #f6f7f5;
+  --l-card: #ffffff;
+  --l-ink: #0c1417;
+  --l-muted: #56636a;
+  --l-line: #e2e6e4;
+  --l-accent: #0f766e;
+  --l-accent-ink: #ffffff;
+  --l-accent-soft: #e3f4f1;
+  --l-warn: #b45309;
+}
+.dark {
+  --l-bg: #0a0f11;
+  --l-card: #10181b;
+  --l-ink: #e7eeec;
+  --l-muted: #93a3a9;
+  --l-line: rgb(255 255 255 / 0.08);
+  --l-accent: #2dd4bf;
+  --l-accent-ink: #062320;
+  --l-accent-soft: rgb(45 212 191 / 0.1);
+  --l-warn: #fbbf24;
+}
+@theme inline {
+  --color-l-bg: var(--l-bg);
+  --color-l-card: var(--l-card);
+  --color-l-ink: var(--l-ink);
+  --color-l-muted: var(--l-muted);
+  --color-l-line: var(--l-line);
+  --color-l-accent: var(--l-accent);
+  --color-l-accent-ink: var(--l-accent-ink);
+  --color-l-accent-soft: var(--l-accent-soft);
+  --color-l-warn: var(--l-warn);
+}

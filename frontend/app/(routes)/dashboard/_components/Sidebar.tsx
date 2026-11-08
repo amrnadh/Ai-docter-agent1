@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton, useUser } from '@clerk/nextjs'
@@ -36,10 +36,27 @@ const dialogMap: Record<string, React.ComponentType<{ children: React.ReactNode 
     'Settings': SettingsDialog,
 }
 
-export default function Sidebar() {
+type SidebarProps = {
+    collapsed: boolean
+    onToggleCollapsed: () => void
+    mobileOpen: boolean
+    onMobileClose: () => void
+}
+
+export default function Sidebar({ collapsed: collapsedDesktop, onToggleCollapsed, mobileOpen, onMobileClose }: SidebarProps) {
     const pathname = usePathname()
-    const [collapsed, setCollapsed] = useState(false)
     const { user } = useUser()
+    // The mobile drawer always shows labels; "collapsed" only applies on desktop.
+    const collapsed = collapsedDesktop && !mobileOpen
+
+    // Close the drawer after navigating, and on Escape.
+    useEffect(() => { onMobileClose() }, [pathname, onMobileClose])
+    useEffect(() => {
+        if (!mobileOpen) return
+        const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onMobileClose()
+        window.addEventListener('keydown', onKey)
+        return () => window.removeEventListener('keydown', onKey)
+    }, [mobileOpen, onMobileClose])
 
     // Get role from Clerk publicMetadata
     const role = (user?.publicMetadata as any)?.role || 'patient'
@@ -51,8 +68,15 @@ export default function Sidebar() {
     }
 
     return (
-        <aside className={`fixed left-4 top-4 bottom-4 z-40 flex flex-col transition-all duration-300 ease-in-out ${collapsed ? 'w-[72px]' : 'w-[240px]'
-            } bg-white/80 dark:bg-[#111111]/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]`}
+        <>
+        {mobileOpen && (
+            <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] lg:hidden" onClick={onMobileClose} aria-hidden />
+        )}
+        <aside
+            id="dashboard-sidebar"
+            aria-label="Dashboard navigation"
+            className={`fixed left-4 top-4 bottom-4 z-50 flex flex-col transition-all duration-300 ease-in-out ${collapsed ? 'w-[72px]' : 'w-[240px]'
+            } ${mobileOpen ? 'translate-x-0' : '-translate-x-[calc(100%+2rem)]'} lg:translate-x-0 bg-white/95 lg:bg-white/80 dark:bg-[#111111]/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]`}
         >
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 px-5 h-20 border-b border-gray-100/50 dark:border-white/5 flex-shrink-0 group cursor-pointer transition-colors">
@@ -97,6 +121,7 @@ export default function Sidebar() {
                                 : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'
                                 }`}
                             title={collapsed ? item.label : undefined}
+                            aria-current={active ? 'page' : undefined}
                         >
                             <div className="flex items-center justify-center flex-shrink-0 w-6 h-6">
                                 <Icon className={`w-5 h-5 ${active ? 'text-gray-900 dark:text-white' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
@@ -159,8 +184,9 @@ export default function Sidebar() {
 
             {/* Collapse Toggle */}
             <button
-                onClick={() => setCollapsed(!collapsed)}
-                className="absolute -right-3.5 top-24 w-7 h-7 rounded-full bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 shadow-sm flex items-center justify-center hover:scale-105 transition-transform z-50 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                onClick={onToggleCollapsed}
+                aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                className="absolute -right-3.5 top-24 hidden lg:flex w-7 h-7 rounded-full bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 shadow-sm items-center justify-center hover:scale-105 transition-transform z-50 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             >
                 {collapsed ? (
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -169,6 +195,7 @@ export default function Sidebar() {
                 )}
             </button>
         </aside>
+        </>
     )
 }
 

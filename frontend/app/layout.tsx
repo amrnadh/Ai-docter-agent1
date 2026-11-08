@@ -19,8 +19,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MedSage | Amarnadh",
-  description: "AI Docter voice agent which can help you to get the best treatment for your health",
+  title: { default: "MedSage · Multi-agent clinical AI", template: "%s · MedSage" },
+  description:
+    "Eight AI specialist agents in one LangGraph pipeline: RAG over clinical papers, CNN ensembles for brain MRI and chest X-ray, lab-report analysis, symptom triage and drug-interaction checks.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  openGraph: {
+    title: "MedSage · Multi-agent clinical AI",
+    description: "Eight AI specialists. One second opinion. A portfolio project by Amarnadh.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

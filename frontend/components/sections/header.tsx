@@ -1,122 +1,115 @@
 "use client";
 
-import { Icons } from "@/components/icons";
-import { buttonVariants } from "@/components/ui/button";
-import { siteConfig } from "@/lib/config";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
+
+const nav = [
+  { label: "Features", href: "#features" },
+  { label: "How it works", href: "#pipeline" },
+  { label: "Models", href: "#models" },
+  { label: "Stack", href: "#stack" },
+];
+
+export function Logo({ className }: { className?: string }) {
+  return (
+    <Link href="/" className={cn("flex items-center gap-2 font-semibold tracking-tight text-l-ink", className)}>
+      <span aria-hidden className="grid size-7 place-items-center rounded-md bg-l-accent text-l-accent-ink">
+        <svg viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <path d="M8 3v10M3 8h10" />
+        </svg>
+      </span>
+      MedSage
+    </Link>
+  );
+}
 
 export default function Header() {
-  const [addBorder, setAddBorder] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setAddBorder(true);
-      } else {
-        setAddBorder(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
     <header
-      className={
-        "sticky top-0 z-50 py-2 bg-background/60 backdrop-blur px-2 sm:px-4"
-      }
+      className={cn(
+        "sticky top-0 z-50 border-b transition-colors",
+        scrolled || open ? "border-l-line bg-l-bg/85 backdrop-blur-md" : "border-transparent bg-transparent"
+      )}
     >
-      <div className="flex justify-between items-center container">
-        <Link
-          href="/"
-          title="brand-logo"
-          className="relative mr-6 flex items-center space-x-2 px-0 sm:pl-20"
-        >
-          {/* <Icons.logo className="w-auto h-[40px]" /> */}
-          <span className="font-bold text-xl">{siteConfig.name}</span>
-        </Link>
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Logo />
 
-        {/* DESKTOP MENU */}
-        <div className="hidden lg:block">
-          <div className="flex items-center">
-            <div className="gap-2 flex items-center">
-              <ThemeToggle />
-              
-              {/* Option 1: User IS Logged In */}
-              <SignedIn>
-                <Link
-                  href="/dashboard"
-                  className={buttonVariants({ variant: "outline" })}
-                >
-                  Dashboard
-                </Link>
-                <UserButton />
-              </SignedIn>
+        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+          {nav.map((n) => (
+            <a key={n.href} href={n.href} className="rounded-md px-3 py-2 text-sm text-l-muted transition-colors hover:text-l-ink">
+              {n.label}
+            </a>
+          ))}
+        </nav>
 
-              {/* Option 2: User IS NOT Logged In */}
-              <SignedOut>
-                <Link
-                  href="/sign-in"
-                  className={buttonVariants({ variant: "outline" })}
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/sign-up"
-                  className={cn(
-                    buttonVariants({ variant: "default" }),
-                    "w-full sm:w-auto text-background"
-                  )}
-                >
-                  Start a Consultation
-                </Link>
-              </SignedOut>
-
-            </div>
-          </div>
-        </div>
-
-        {/* MOBILE MENU */}
-        <div className="mt-2 cursor-pointer block lg:hidden">
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            
-            <SignedIn>
-              <Link
-                href="/dashboard"
-                className={buttonVariants({ variant: "outline" })}
-              >
-                Dashboard
-              </Link>
-              <UserButton />
-            </SignedIn>
-
-            <SignedOut>
-              <Link
-                href="/sign-in"
-                className={buttonVariants({ variant: "outline" })}
-              >
-                Login
-              </Link>
-            </SignedOut>
-
-          </div>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <SignedIn>
+            <Link href="/dashboard" className="hidden h-9 items-center rounded-full bg-l-ink px-4 text-sm font-medium text-l-bg transition-opacity hover:opacity-90 sm:inline-flex">
+              Dashboard
+            </Link>
+            <UserButton />
+          </SignedIn>
+          <SignedOut>
+            <Link href="/sign-in" className="hidden h-9 items-center rounded-full px-4 text-sm font-medium text-l-ink hover:bg-l-line/60 sm:inline-flex">
+              Sign in
+            </Link>
+            <Link href="/sign-up" className="hidden h-9 items-center rounded-full bg-l-ink px-4 text-sm font-medium text-l-bg transition-opacity hover:opacity-90 sm:inline-flex">
+              Try the demo
+            </Link>
+          </SignedOut>
+          <button
+            type="button"
+            className="grid size-9 place-items-center rounded-md text-l-ink md:hidden"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            onClick={() => setOpen((o) => !o)}
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
         </div>
       </div>
-      <hr
-        className={cn(
-          "absolute w-full bottom-0 transition-opacity duration-300 ease-in-out",
-          addBorder ? "opacity-100" : "opacity-0"
-        )}
-      />
+
+      {open && (
+        <div className="border-t border-l-line px-4 pb-4 md:hidden">
+          <nav aria-label="Mobile" className="flex flex-col py-2">
+            {nav.map((n) => (
+              <a key={n.href} href={n.href} onClick={() => setOpen(false)} className="py-2.5 text-l-ink">
+                {n.label}
+              </a>
+            ))}
+          </nav>
+          <SignedOut>
+            <div className="grid grid-cols-2 gap-2">
+              <Link href="/sign-in" className="inline-flex h-10 items-center justify-center rounded-full border border-l-line text-sm font-medium text-l-ink">
+                Sign in
+              </Link>
+              <Link href="/sign-up" className="inline-flex h-10 items-center justify-center rounded-full bg-l-ink text-sm font-medium text-l-bg">
+                Try the demo
+              </Link>
+            </div>
+          </SignedOut>
+          <SignedIn>
+            <Link href="/dashboard" className="inline-flex h-10 w-full items-center justify-center rounded-full bg-l-ink text-sm font-medium text-l-bg">
+              Open dashboard
+            </Link>
+          </SignedIn>
+        </div>
+      )}
     </header>
   );
 }

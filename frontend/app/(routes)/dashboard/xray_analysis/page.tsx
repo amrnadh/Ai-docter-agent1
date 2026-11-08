@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
+import ModelStatusBanner from '@/components/ModelStatusBanner'
 
 type ScanResult = {
     id: string
@@ -264,15 +265,15 @@ export default function XrayAnalysis() {
     }
 
     const getDiagnosisColor = (diagnosis: string) => {
-        return diagnosis === 'PNEUMONIA' ? 'text-red-600' : 'text-green-600'
+        return diagnosis === 'PNEUMONIA' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'
     }
 
     const getConfidenceBg = (level: string) => {
         switch (level) {
-            case 'High': return 'bg-green-100 text-green-800'
-            case 'Moderate': return 'bg-yellow-100 text-yellow-800'
-            case 'Low': return 'bg-orange-100 text-orange-800'
-            default: return 'bg-gray-100 text-gray-800'
+            case 'High': return 'bg-green-100 dark:bg-green-500/15 text-green-800 dark:text-green-300'
+            case 'Moderate': return 'bg-yellow-100 dark:bg-yellow-500/15 text-yellow-800 dark:text-yellow-300'
+            case 'Low': return 'bg-orange-100 dark:bg-orange-500/15 text-orange-800 dark:text-orange-300'
+            default: return 'bg-gray-100 dark:bg-white/[0.07] text-gray-800 dark:text-gray-100'
         }
     }
 
@@ -287,24 +288,24 @@ export default function XrayAnalysis() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 dark:from-[#0a0a0a] via-blue-50 dark:via-[#0a0a0a] to-indigo-50 dark:to-[#141414]">
             {/* Header */}
-            <div className="bg-white/80 backdrop-blur-sm border-b border-blue-100 sticky top-0 z-10">
+            <div className="bg-white/80 dark:bg-[#141414]/80 backdrop-blur-sm border-b border-blue-100 dark:border-white/10 sticky top-14 lg:top-0 z-10">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/dashboard">
-                            <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-800">
+                            <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100">
                                 <ArrowLeft className="w-4 h-4 mr-1" /> Dashboard
                             </Button>
                         </Link>
-                        <div className="h-6 w-px bg-gray-200" />
+                        <div className="h-6 w-px bg-gray-200 dark:bg-white/10" />
                         <div className="flex items-center gap-2">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg shadow-indigo-200">
                                 <Stethoscope className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-lg font-bold text-gray-800">Chest X-ray Analysis</h1>
-                                <p className="text-xs text-gray-500">AI-Powered Pneumonia Detection</p>
+                                <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">Chest X-ray Analysis</h1>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">AI-Powered Pneumonia Detection</p>
                             </div>
                         </div>
                     </div>
@@ -323,28 +324,29 @@ export default function XrayAnalysis() {
             <div className="max-w-7xl mx-auto px-6 py-8 flex gap-6">
                 {/* Main Content */}
                 <div className={`flex-1 transition-all duration-300 ${showHistory ? 'mr-0' : ''}`}>
+                    <div className="mb-4"><ModelStatusBanner space="tensorflow" /></div>
                     {/* Upload Section */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-8 mb-6">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                            <UploadCloud className="w-5 h-5 text-blue-600" />
+                    <div className="bg-white dark:bg-[#141414] rounded-2xl shadow-sm border border-blue-100 dark:border-white/10 p-8 mb-6">
+                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
+                            <UploadCloud className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                             Upload Chest X-ray
                         </h2>
 
                         {/* Patient Info */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                             <div>
-                                <label className="text-sm font-medium text-gray-600 mb-1 block">
+                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1 block">
                                     Patient Name <span className="text-gray-400">(optional)</span>
                                 </label>
                                 <Input
                                     value={patientName}
                                     onChange={(e) => setPatientName(e.target.value)}
                                     placeholder="Enter patient name"
-                                    className="bg-gray-50 border-gray-200"
+                                    className="bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/10"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium text-gray-600 mb-1 block">
+                                <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1 block">
                                     Patient Age <span className="text-gray-400">(optional)</span>
                                 </label>
                                 <Input
@@ -352,7 +354,7 @@ export default function XrayAnalysis() {
                                     value={patientAge}
                                     onChange={(e) => setPatientAge(e.target.value)}
                                     placeholder="Enter age"
-                                    className="bg-gray-50 border-gray-200"
+                                    className="bg-gray-50 dark:bg-white/[0.04] border-gray-200 dark:border-white/10"
                                 />
                             </div>
                         </div>
@@ -361,10 +363,10 @@ export default function XrayAnalysis() {
                         <div
                             className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 cursor-pointer
                 ${dragActive
-                                    ? 'border-blue-500 bg-blue-50 scale-[1.01]'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 scale-[1.01]'
                                     : preview
                                         ? 'border-green-300 bg-green-50/50'
-                                        : 'border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50/50'
+                                        : 'border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-white/[0.04] hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-500/10'
                                 }
               `}
                             onClick={() => fileInputRef.current?.click()}
@@ -397,7 +399,7 @@ export default function XrayAnalysis() {
                                             className="max-h-80 mx-auto rounded-xl shadow-md"
                                         />
                                     )}
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">
                                         <span className="font-medium">{file?.name}</span>
                                         <span className="text-gray-400 ml-2">
                                             ({((file?.size || 0) / 1024).toFixed(1)} KB)
@@ -412,14 +414,14 @@ export default function XrayAnalysis() {
                                 </div>
                             ) : (
                                 <div className="space-y-3">
-                                    <div className="w-16 h-16 mx-auto rounded-2xl bg-blue-100 flex items-center justify-center">
+                                    <div className="w-16 h-16 mx-auto rounded-2xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center">
                                         <UploadCloud className="w-8 h-8 text-blue-500" />
                                     </div>
                                     <div>
-                                        <p className="text-gray-700 font-medium">
+                                        <p className="text-gray-700 dark:text-gray-200 font-medium">
                                             Drag & drop your chest X-ray image here
                                         </p>
-                                        <p className="text-sm text-gray-500 mt-1">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                             or click to browse (JPEG, PNG, DICOM — max 10MB)
                                         </p>
                                     </div>
@@ -450,7 +452,7 @@ export default function XrayAnalysis() {
                             {/* Loading Steps */}
                             {loading && (
                                 <div className="w-full max-w-md mx-auto">
-                                    <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
+                                    <div className="bg-indigo-50 dark:bg-indigo-500/10 rounded-xl p-4 border border-indigo-100 dark:border-white/10">
                                         <div className="space-y-2">
                                             {LOADING_STEPS.map((step, idx) => {
                                                 const StepIcon = step.icon
@@ -460,14 +462,14 @@ export default function XrayAnalysis() {
                                                 return (
                                                     <div
                                                         key={idx}
-                                                        className={`flex items-center gap-3 text-sm transition-all duration-300 ${isActive ? 'text-indigo-700 font-medium' :
-                                                            isDone ? 'text-green-600' : 'text-gray-400'
+                                                        className={`flex items-center gap-3 text-sm transition-all duration-300 ${isActive ? 'text-indigo-700 dark:text-indigo-300 font-medium' :
+                                                            isDone ? 'text-green-600 dark:text-green-400' : 'text-gray-400'
                                                             }`}
                                                     >
                                                         {isDone ? (
                                                             <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                                                         ) : isActive ? (
-                                                            <Loader2 className="w-4 h-4 animate-spin text-indigo-600 flex-shrink-0" />
+                                                            <Loader2 className="w-4 h-4 animate-spin text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                                                         ) : (
                                                             <StepIcon className="w-4 h-4 flex-shrink-0" />
                                                         )}
@@ -484,9 +486,9 @@ export default function XrayAnalysis() {
 
                     {/* Results Section */}
                     {result && (
-                        <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                                <Shield className="w-5 h-5 text-blue-600" />
+                        <div className="bg-white dark:bg-[#141414] rounded-2xl shadow-sm border border-blue-100 dark:border-white/10 p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
+                                <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                 Analysis Results
                                 {result.analysis_time && (
                                     <span className="ml-auto text-sm font-normal text-gray-400 flex items-center gap-1">
@@ -498,31 +500,31 @@ export default function XrayAnalysis() {
 
                             {/* Diagnosis Banner */}
                             <div className={`rounded-2xl p-6 mb-6 ${result.diagnosis === 'PNEUMONIA'
-                                ? 'bg-gradient-to-r from-red-50 to-orange-50 border border-red-200'
-                                : 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200'
+                                ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:to-[#141414] border border-red-200'
+                                : 'bg-gradient-to-r from-green-50 to-emerald-50 dark:to-[#141414] border border-green-200'
                                 }`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${result.diagnosis === 'PNEUMONIA'
-                                            ? 'bg-red-100'
-                                            : 'bg-green-100'
+                                            ? 'bg-red-100 dark:bg-red-500/15'
+                                            : 'bg-green-100 dark:bg-green-500/15'
                                             }`}>
                                             {result.diagnosis === 'PNEUMONIA' ? (
-                                                <AlertTriangle className="w-7 h-7 text-red-600" />
+                                                <AlertTriangle className="w-7 h-7 text-red-600 dark:text-red-400" />
                                             ) : (
-                                                <CheckCircle className="w-7 h-7 text-green-600" />
+                                                <CheckCircle className="w-7 h-7 text-green-600 dark:text-green-400" />
                                             )}
                                         </div>
                                         <div>
-                                            <p className="text-sm text-gray-500 font-medium">Diagnosis</p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Diagnosis</p>
                                             <p className={`text-2xl font-bold ${getDiagnosisColor(result.diagnosis)}`}>
                                                 {result.diagnosis}
                                             </p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm text-gray-500 font-medium">Confidence</p>
-                                        <p className="text-3xl font-bold text-gray-800">{result.confidence}%</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Confidence</p>
+                                        <p className="text-3xl font-bold text-gray-800 dark:text-gray-100">{result.confidence}%</p>
                                         <span className={`inline-block mt-1 px-3 py-0.5 rounded-full text-xs font-semibold ${getConfidenceBg(result.confidence_level)}`}>
                                             {result.confidence_level}
                                         </span>
@@ -531,7 +533,7 @@ export default function XrayAnalysis() {
 
                                 {/* Animated Confidence Bar */}
                                 <div className="mt-4">
-                                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div className="w-full bg-gray-200 dark:bg-white/10 rounded-full h-3 overflow-hidden">
                                         <div
                                             className={`h-full rounded-full transition-all duration-1000 ease-out ${result.diagnosis === 'PNEUMONIA'
                                                 ? 'bg-gradient-to-r from-red-400 to-red-600'
@@ -544,11 +546,11 @@ export default function XrayAnalysis() {
                             </div>
 
                             {/* Recommendation */}
-                            <div className="bg-blue-50 rounded-xl p-5 mb-6 border border-blue-100">
-                                <h3 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-1.5">
+                            <div className="bg-blue-50 dark:bg-blue-500/10 rounded-xl p-5 mb-6 border border-blue-100 dark:border-white/10">
+                                <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-1.5">
                                     <Info className="w-4 h-4" /> Recommendation
                                 </h3>
-                                <p className="text-gray-700">{result.recommendation}</p>
+                                <p className="text-gray-700 dark:text-gray-200">{result.recommendation}</p>
                             </div>
 
                             {/* Action Buttons Row */}
@@ -558,7 +560,7 @@ export default function XrayAnalysis() {
                                     <Button
                                         variant="outline"
                                         onClick={() => setShowHeatmap(!showHeatmap)}
-                                        className="flex items-center gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                                        className="flex items-center gap-2 border-indigo-200 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
                                     >
                                         <Eye className="w-4 h-4" />
                                         {showHeatmap ? 'Hide' : 'Show'} AI Focus
@@ -570,7 +572,7 @@ export default function XrayAnalysis() {
                                     variant="outline"
                                     onClick={handleDownloadPdf}
                                     disabled={downloadingPdf}
-                                    className="flex items-center gap-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                                    className="flex items-center gap-2 border-emerald-200 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
                                 >
                                     {downloadingPdf ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -584,7 +586,7 @@ export default function XrayAnalysis() {
                                 <Button
                                     variant="outline"
                                     onClick={() => setShowStats(!showStats)}
-                                    className="flex items-center gap-2 border-purple-200 text-purple-700 hover:bg-purple-50"
+                                    className="flex items-center gap-2 border-purple-200 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-500/10"
                                 >
                                     <BarChart3 className="w-4 h-4" />
                                     Model Performance
@@ -643,7 +645,7 @@ export default function XrayAnalysis() {
                                             </div>
                                         </div>
 
-                                        <p className="text-gray-500 text-xs mt-3 text-center italic">
+                                        <p className="text-gray-500 dark:text-gray-400 text-xs mt-3 text-center italic">
                                             This visualization shows where the AI model focused during analysis.
                                             Red/yellow areas indicate regions of high attention.
                                         </p>
@@ -654,66 +656,66 @@ export default function XrayAnalysis() {
                             {/* Model Performance Stats */}
                             {showStats && (
                                 <div className="mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100">
-                                        <h3 className="text-sm font-semibold text-indigo-800 mb-4 flex items-center gap-2">
+                                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:to-[#141414] rounded-xl p-6 border border-indigo-100 dark:border-white/10">
+                                        <h3 className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-4 flex items-center gap-2">
                                             <BarChart3 className="w-4 h-4" />
                                             Model Validation Performance
                                         </h3>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                                            <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                                            <div className="bg-white dark:bg-[#141414] rounded-lg p-3 text-center shadow-sm">
                                                 <div className="flex items-center justify-center gap-1 mb-1">
                                                     <Target className="w-3.5 h-3.5 text-indigo-500" />
                                                 </div>
-                                                <p className="text-2xl font-bold text-indigo-700">86%</p>
-                                                <p className="text-xs text-gray-500">Accuracy</p>
+                                                <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">86%</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">Accuracy</p>
                                             </div>
-                                            <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                                            <div className="bg-white dark:bg-[#141414] rounded-lg p-3 text-center shadow-sm">
                                                 <div className="flex items-center justify-center gap-1 mb-1">
                                                     <TrendingUp className="w-3.5 h-3.5 text-green-500" />
                                                 </div>
-                                                <p className="text-2xl font-bold text-green-700">96.4%</p>
-                                                <p className="text-xs text-gray-500">Sensitivity</p>
+                                                <p className="text-2xl font-bold text-green-700 dark:text-green-300">96.4%</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">Sensitivity</p>
                                             </div>
-                                            <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                                            <div className="bg-white dark:bg-[#141414] rounded-lg p-3 text-center shadow-sm">
                                                 <div className="flex items-center justify-center gap-1 mb-1">
                                                     <Shield className="w-3.5 h-3.5 text-blue-500" />
                                                 </div>
-                                                <p className="text-2xl font-bold text-blue-700">74.8%</p>
-                                                <p className="text-xs text-gray-500">Specificity</p>
+                                                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">74.8%</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">Specificity</p>
                                             </div>
-                                            <div className="bg-white rounded-lg p-3 text-center shadow-sm">
+                                            <div className="bg-white dark:bg-[#141414] rounded-lg p-3 text-center shadow-sm">
                                                 <div className="flex items-center justify-center gap-1 mb-1">
                                                     <Activity className="w-3.5 h-3.5 text-purple-500" />
                                                 </div>
-                                                <p className="text-2xl font-bold text-purple-700">0.964</p>
-                                                <p className="text-xs text-gray-500">ROC AUC</p>
+                                                <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">0.964</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">ROC AUC</p>
                                             </div>
                                         </div>
 
                                         {/* Confusion Matrix Summary */}
-                                        <div className="bg-white rounded-lg p-4 shadow-sm">
-                                            <h4 className="text-xs font-semibold text-gray-600 mb-2">Cross-Operator Validation (485 samples)</h4>
+                                        <div className="bg-white dark:bg-[#141414] rounded-lg p-4 shadow-sm">
+                                            <h4 className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2">Cross-Operator Validation (485 samples)</h4>
                                             <div className="grid grid-cols-2 gap-2 text-xs">
-                                                <div className="flex justify-between bg-green-50 rounded p-2">
-                                                    <span className="text-gray-600">True Positives</span>
-                                                    <span className="font-bold text-green-700">242</span>
+                                                <div className="flex justify-between bg-green-50 dark:bg-green-500/10 rounded p-2">
+                                                    <span className="text-gray-600 dark:text-gray-300">True Positives</span>
+                                                    <span className="font-bold text-green-700 dark:text-green-300">242</span>
                                                 </div>
-                                                <div className="flex justify-between bg-green-50 rounded p-2">
-                                                    <span className="text-gray-600">True Negatives</span>
-                                                    <span className="font-bold text-green-700">175</span>
+                                                <div className="flex justify-between bg-green-50 dark:bg-green-500/10 rounded p-2">
+                                                    <span className="text-gray-600 dark:text-gray-300">True Negatives</span>
+                                                    <span className="font-bold text-green-700 dark:text-green-300">175</span>
                                                 </div>
-                                                <div className="flex justify-between bg-red-50 rounded p-2">
-                                                    <span className="text-gray-600">False Positives</span>
-                                                    <span className="font-bold text-red-600">59</span>
+                                                <div className="flex justify-between bg-red-50 dark:bg-red-500/10 rounded p-2">
+                                                    <span className="text-gray-600 dark:text-gray-300">False Positives</span>
+                                                    <span className="font-bold text-red-600 dark:text-red-400">59</span>
                                                 </div>
-                                                <div className="flex justify-between bg-red-50 rounded p-2">
-                                                    <span className="text-gray-600">False Negatives</span>
-                                                    <span className="font-bold text-red-600">9</span>
+                                                <div className="flex justify-between bg-red-50 dark:bg-red-500/10 rounded p-2">
+                                                    <span className="text-gray-600 dark:text-gray-300">False Negatives</span>
+                                                    <span className="font-bold text-red-600 dark:text-red-400">9</span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <p className="text-xs text-gray-500 mt-3 text-center">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">
                                             MobileNetV2 architecture · Validated on 485 independent samples · Good generalization
                                         </p>
                                     </div>
@@ -723,34 +725,34 @@ export default function XrayAnalysis() {
                             {/* Additional Info Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                                 {result.patient_name && (
-                                    <div className="bg-gray-50 rounded-xl p-3 text-center">
-                                        <p className="text-xs text-gray-500">Patient</p>
-                                        <p className="font-semibold text-gray-700 text-sm">{result.patient_name}</p>
+                                    <div className="bg-gray-50 dark:bg-white/[0.04] rounded-xl p-3 text-center">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">Patient</p>
+                                        <p className="font-semibold text-gray-700 dark:text-gray-200 text-sm">{result.patient_name}</p>
                                     </div>
                                 )}
                                 {result.patient_age && (
-                                    <div className="bg-gray-50 rounded-xl p-3 text-center">
-                                        <p className="text-xs text-gray-500">Age</p>
-                                        <p className="font-semibold text-gray-700 text-sm">{result.patient_age}</p>
+                                    <div className="bg-gray-50 dark:bg-white/[0.04] rounded-xl p-3 text-center">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">Age</p>
+                                        <p className="font-semibold text-gray-700 dark:text-gray-200 text-sm">{result.patient_age}</p>
                                     </div>
                                 )}
                                 {result.file_name && (
-                                    <div className="bg-gray-50 rounded-xl p-3 text-center">
-                                        <p className="text-xs text-gray-500">File</p>
-                                        <p className="font-semibold text-gray-700 text-sm truncate">{result.file_name}</p>
+                                    <div className="bg-gray-50 dark:bg-white/[0.04] rounded-xl p-3 text-center">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">File</p>
+                                        <p className="font-semibold text-gray-700 dark:text-gray-200 text-sm truncate">{result.file_name}</p>
                                     </div>
                                 )}
-                                <div className="bg-gray-50 rounded-xl p-3 text-center">
-                                    <p className="text-xs text-gray-500">Analyzed</p>
-                                    <p className="font-semibold text-gray-700 text-sm">{formatDate(result.created_at)}</p>
+                                <div className="bg-gray-50 dark:bg-white/[0.04] rounded-xl p-3 text-center">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Analyzed</p>
+                                    <p className="font-semibold text-gray-700 dark:text-gray-200 text-sm">{formatDate(result.created_at)}</p>
                                 </div>
                             </div>
 
                             {/* Disclaimer */}
-                            <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                            <div className="bg-amber-50 dark:bg-amber-500/10 rounded-xl p-4 border border-amber-200">
                                 <div className="flex items-start gap-2">
-                                    <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                                    <p className="text-xs text-amber-800">
+                                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                                    <p className="text-xs text-amber-800 dark:text-amber-300">
                                         {result.disclaimer || "This AI system is for preliminary screening only. It is NOT a replacement for professional medical diagnosis. Always consult qualified healthcare professionals for medical decisions."}
                                     </p>
                                 </div>
@@ -762,9 +764,9 @@ export default function XrayAnalysis() {
                 {/* History Sidebar */}
                 {showHistory && (
                     <div className="w-80 flex-shrink-0 animate-in slide-in-from-right duration-300">
-                        <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-5 sticky top-24">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                                <History className="w-5 h-5 text-blue-600" />
+                        <div className="bg-white dark:bg-[#141414] rounded-2xl shadow-sm border border-blue-100 dark:border-white/10 p-5 sticky top-24">
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+                                <History className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                 Scan History
                             </h3>
 
@@ -780,8 +782,8 @@ export default function XrayAnalysis() {
                                             key={item.id}
                                             onClick={() => handleSelectHistory(item)}
                                             className={`w-full text-left p-3 rounded-xl border transition-all hover:shadow-sm ${result?.id === item.id
-                                                ? 'bg-blue-50 border-blue-200'
-                                                : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
+                                                ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-200'
+                                                : 'bg-gray-50 dark:bg-white/[0.04] border-gray-100 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/10'
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between mb-1">
@@ -792,9 +794,9 @@ export default function XrayAnalysis() {
                                                     {item.confidence}%
                                                 </span>
                                             </div>
-                                            <p className="text-xs text-gray-600 truncate">{item.file_name}</p>
+                                            <p className="text-xs text-gray-600 dark:text-gray-300 truncate">{item.file_name}</p>
                                             {item.patient_name && (
-                                                <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
                                                     <User className="w-3 h-3" /> {item.patient_name}
                                                 </p>
                                             )}

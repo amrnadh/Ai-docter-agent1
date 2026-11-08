@@ -36,7 +36,7 @@ function AppHeader() {
   return (
     <header
       className={
-        "sticky top-0 z-50 py-2 bg-background/60 backdrop-blur px-2 sm:px-4"
+        "sticky top-14 lg:top-0 z-50 py-2 bg-background/60 backdrop-blur px-2 sm:px-4"
       }
     >
       <div className="flex justify-between items-center container">
