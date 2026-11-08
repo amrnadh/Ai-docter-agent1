@@ -1,0 +1,13 @@
+venv/
+**/__pycache__/
+**/*.pyc
+.DS_Store
+uploads/
+hf-space-pytorch/
+hf-space-tensorflow/
+app/data/raw_extras/
+app/data/parsed_docs/*
+!app/data/parsed_docs/*-picture-*.png
+*.md
+!app/agents/README.md
+.env

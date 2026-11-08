@@ -1,5 +1,7 @@
+import os
 import logging
 from typing import List, Dict, Any, Optional, Union
+from app.core.public_urls import RAG_DOCS_DIR, public_url
 
 class ResponseGenerator:
     """
@@ -128,16 +130,21 @@ class ResponseGenerator:
             if hasattr(self, 'include_sources') and self.include_sources:
                 response_with_source = response.content + "\n\n##### Source documents:"
                 for current_source in sources:
-                    source_path = current_source['path']
                     source_title = current_source['title']
-                    response_with_source += f"\n- [{source_title}]({source_path})"
+                    source_file = os.path.basename(current_source['path'] or source_title)
+                    if os.path.exists(os.path.join(RAG_DOCS_DIR, source_file)):
+                        response_with_source += f"\n- [{source_title}]({public_url('rag-docs', source_file)})"
+                    else:
+                        response_with_source += f"\n- {source_title}"
             else:
                 response_with_source = response.content
             
             # Add picture paths to response
-            response_with_source_and_picture_paths = response_with_source + "\n\n##### Reference images:"
-            for picture_path in picture_paths:
-                response_with_source_and_picture_paths += f"\n- [{picture_path.split('/')[-1]}]({picture_path})"
+            response_with_source_and_picture_paths = response_with_source
+            if picture_paths:
+                response_with_source_and_picture_paths += "\n\n##### Reference images:"
+                for picture_path in picture_paths:
+                    response_with_source_and_picture_paths += f"\n- [{picture_path.split('/')[-1]}]({picture_path})"
             
             # Format final response
             result = {

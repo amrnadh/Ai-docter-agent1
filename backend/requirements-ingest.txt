@@ -1,0 +1,4 @@
+# Only needed to (re)build the RAG vector index locally, not at runtime.
+#   pip install -r requirements.txt -r requirements-ingest.txt
+#   python -m app.scripts.ingest_rag
+docling==2.73.1

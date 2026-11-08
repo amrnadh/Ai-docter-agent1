@@ -3,6 +3,7 @@ import re
 import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union
+from app.core.public_urls import public_url
 
 class Reranker:
     """
@@ -96,9 +97,9 @@ class Reranker:
                     counter_value = int(match.group(1))
                     # Create picture path based on document source and counter
                     doc_basename = os.path.splitext(doc['source'])[0]  # Remove file extension
-                    # picture_path = Path(os.path.abspath(parsed_content_dir + "/" + f"{doc_basename}-picture-{counter_value}.png")).as_uri()
-                    picture_path = os.path.join("http://localhost:8000/", parsed_content_dir + "/" + f"{doc_basename}-picture-{counter_value}.png")
-                    picture_reference_paths.append(picture_path)
+                    picture_path = public_url("rag-images", f"{doc_basename}-picture-{counter_value}.png")
+                    if picture_path not in picture_reference_paths:
+                        picture_reference_paths.append(picture_path)
             
             return reranked_docs, picture_reference_paths
             

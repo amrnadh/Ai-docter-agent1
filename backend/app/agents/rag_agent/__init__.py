@@ -3,7 +3,6 @@ import time
 import logging
 from typing import List, Optional, Dict, Any
 
-from .doc_parser import MedicalDocParser
 from .content_processor import ContentProcessor
 from .vectorstore_qdrant import VectorStore
 from .reranker import Reranker
@@ -25,7 +24,7 @@ class MedicalRAG:
         self.logger = logging.getLogger(f"{self.__module__}")
         self.logger.info("Initializing Medical RAG system")
         self.config = config
-        self.doc_parser = MedicalDocParser()
+        self._doc_parser = None  # docling is heavy; only loaded for ingestion
         self.content_processor = ContentProcessor(config)
         self.vector_store = VectorStore(config)
         self.reranker = Reranker(config)
@@ -33,6 +32,18 @@ class MedicalRAG:
         self.response_generator = ResponseGenerator(config)
         self.parsed_content_dir = self.config.rag.parsed_content_dir
     
+    @property
+    def doc_parser(self):
+        if self._doc_parser is None:
+            try:
+                from .doc_parser import MedicalDocParser
+            except ImportError as e:
+                raise RuntimeError(
+                    "Document ingestion needs docling: pip install -r requirements-ingest.txt"
+                ) from e
+            self._doc_parser = MedicalDocParser()
+        return self._doc_parser
+
     def ingest_directory(self, directory_path: str) -> Dict[str, Any]:
         """
         Ingest all files in a directory into the RAG system.

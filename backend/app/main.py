@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.api.v1.endpoints import chat, history, users, assistant, report, xray, consultation, onboarding, brain_tumor
+from app.api.v1.endpoints import chat, history, users, assistant, report, xray, consultation, onboarding, brain_tumor, ml_status
 import os
 
 app = FastAPI(title="AI Doctor Agent API")
@@ -33,6 +33,12 @@ uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads"
 if os.path.exists(uploads_dir):
     app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
+# RAG citations: figures extracted from papers, and the source PDFs themselves
+from app.core.public_urls import RAG_DOCS_DIR, RAG_IMAGES_DIR  # noqa: E402
+for _mount, _dir in (("/rag-images", RAG_IMAGES_DIR), ("/rag-docs", RAG_DOCS_DIR)):
+    if os.path.isdir(_dir):
+        app.mount(_mount, StaticFiles(directory=_dir), name=_mount.strip("/"))
+
 app.include_router(chat.router, prefix="/api/v1/chat", tags=["chat"])
 app.include_router(history.router, prefix="/api/v1/history", tags=["history"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
@@ -42,6 +48,7 @@ app.include_router(xray.router, prefix="/api/v1/xray", tags=["xray"])
 app.include_router(brain_tumor.router, prefix="/api/v1/brain_tumor", tags=["brain_tumor"])
 app.include_router(consultation.router, prefix="/api/v1/consultation", tags=["consultation"])
 app.include_router(onboarding.router, prefix="/api/v1", tags=["onboarding"])
+app.include_router(ml_status.router, prefix="/api/v1/ml", tags=["ml"])
 
 @app.get("/")
 def read_root():

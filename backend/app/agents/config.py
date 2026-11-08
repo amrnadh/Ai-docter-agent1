@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_groq import ChatGroq
 
+from app.core.llm_models import GEMINI_MODEL, GROQ_MODEL, EMBEDDING_DIM, make_embeddings
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -19,7 +21,7 @@ class AgentDecisionConfig:
     def __init__(self):
         # Groq is faster and has better free limits for routing
         self.llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
+            model=GROQ_MODEL,
             api_key=GROQ_API_KEY,
             temperature=0.1
         )
@@ -28,7 +30,7 @@ class ConversationConfig:
     def __init__(self):
         # Llama 3 is excellent for chat
         self.llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
+            model=GROQ_MODEL,
             api_key=GROQ_API_KEY,
             temperature=0.7
         )
@@ -36,7 +38,7 @@ class ConversationConfig:
 class WebSearchConfig:
     def __init__(self):
         self.llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
+            model=GROQ_MODEL,
             api_key=GROQ_API_KEY,
             temperature=0.3
         )
@@ -50,7 +52,7 @@ class RAGConfig:
         
         # Local configuration
         self.vector_db_type = "qdrant"
-        self.embedding_dim = 768  # models/text-embedding-004 dimension
+        self.embedding_dim = EMBEDDING_DIM
         self.distance_metric = "Cosine"
         self.use_local = True
         self.vector_local_path = os.path.join(base_path, "data/qdrant_db")
@@ -64,29 +66,26 @@ class RAGConfig:
         self.chunk_overlap = 50
         
         # Initialize API-based Embeddings to save RAM
-        self.embedding_model = GoogleGenerativeAIEmbeddings(
-            model="models/text-embedding-004",
-            google_api_key=GOOGLE_API_KEY
-        )
+        self.embedding_model = make_embeddings(GOOGLE_API_KEY)
         
         # Use Gemini for RAG tasks to handle large contexts and avoid Groq rate limits
         self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
+            model=GEMINI_MODEL,
             google_api_key=GOOGLE_API_KEY,
             temperature=0.3
         )
         self.summarizer_model = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
+            model=GEMINI_MODEL,
             google_api_key=GOOGLE_API_KEY,
             temperature=0.5
         )
         self.chunker_model = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
+            model=GEMINI_MODEL,
             google_api_key=GOOGLE_API_KEY,
             temperature=0.0
         )
         self.response_generator_model = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
+            model=GEMINI_MODEL,
             google_api_key=GOOGLE_API_KEY,
             temperature=0.3
         )
@@ -119,7 +118,7 @@ class MedicalCVConfig:
         
         # Keep Gemini for Vision Tasks
         self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
+            model=GEMINI_MODEL,
             google_api_key=GOOGLE_API_KEY,
             temperature=0.1
         )

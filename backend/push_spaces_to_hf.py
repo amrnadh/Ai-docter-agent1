@@ -1,97 +1,126 @@
 """
-Push both HuggingFace Spaces (PyTorch + TensorFlow) to HuggingFace.
-Run: python3 push_spaces_to_hf.py
+Deploy MedSage to Hugging Face Spaces (free Docker hosting, 16GB RAM).
+
+    huggingface-cli login                      # once, with a write token
+    python3 push_spaces_to_hf.py               # all three Spaces
+    python3 push_spaces_to_hf.py api           # just the FastAPI backend
+    python3 push_spaces_to_hf.py api --secrets # also copy backend keys from ../.env
+    python3 push_spaces_to_hf.py --restart     # factory-restart (fixes "Scheduling failure")
+
+Set HF_USERNAME to deploy under a different account (default: Amar-nadh).
 """
 
-from huggingface_hub import HfApi, create_repo
+import argparse
 import os
 
-api = HfApi()
-USERNAME = "Amar-nadh"
+from huggingface_hub import HfApi
 
-SPACES = [
-    {
-        "repo_name": "medsage-pytorch",
-        "local_dir": os.path.join(os.path.dirname(os.path.abspath(__file__)), "hf-space-pytorch"),
-        "description": "MedSage PyTorch Inference Server - Brain Tumor (Ensemble + ViT), COVID X-ray, Skin Lesion",
+HERE = os.path.dirname(os.path.abspath(__file__))
+USERNAME = os.getenv("HF_USERNAME", "Amar-nadh")
+
+API_README = """---
+title: MedSage API
+emoji: 🩺
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
+FastAPI backend for MedSage (multi-agent medical assistant). See /docs.
+"""
+
+SPACES = {
+    "api": {
+        "repo_name": "medsage-api",
+        "local_dir": HERE,
+        "ignore": [
+            "venv/*", "**/__pycache__/*", "*.pyc", ".DS_Store", "**/.DS_Store", "uploads/*",
+            "hf-space-*/*", "app/data/raw_extras/*", "app/data/parsed_docs/*",
+            "push_spaces_to_hf.py", "upload_models_to_hf.py", ".env",
+        ],
+        "readme": API_README,
     },
-    {
-        "repo_name": "medsage-tensorflow",
-        "local_dir": os.path.join(os.path.dirname(os.path.abspath(__file__)), "hf-space-tensorflow"),
-        "description": "MedSage TensorFlow Inference Server - Chest X-ray Pneumonia Detection (MobileNetV2)",
-    },
+    "pytorch": {"repo_name": "medsage-pytorch", "local_dir": os.path.join(HERE, "hf-space-pytorch")},
+    "tensorflow": {"repo_name": "medsage-tensorflow", "local_dir": os.path.join(HERE, "hf-space-tensorflow")},
+}
+
+# Backend env vars copied as Space secrets with --secrets. Everything else in
+# .env (frontend-only keys) is deliberately left out.
+BACKEND_SECRETS = [
+    "DATABASE_URL", "GEMINI_API_KEY", "GOOGLE_API_KEY", "GROQ_API_KEY", "TAVILY_API_KEY",
+    "ELEVEN_LABS_API_KEY", "HUGGINGFACE_TOKEN",
+    "CLERK_SECRET_KEY", "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "CLERK_ISSUER", "CORS_ORIGINS",
+    "HF_PYTORCH_SPACE_URL", "HF_TENSORFLOW_SPACE_URL", "GEMINI_MODEL", "GEMINI_EMBEDDING_MODEL",
+    "PUBLIC_API_URL",
 ]
 
 
-def push_space(space_info: dict):
-    repo_id = f"{USERNAME}/{space_info['repo_name']}"
-    local_dir = space_info["local_dir"]
+def read_env(path: str) -> dict:
+    values = {}
+    if not os.path.exists(path):
+        return values
+    for line in open(path):
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            values[k.strip()] = v.strip().strip('"').strip("'")
+    return values
 
-    print(f"\n{'='*60}")
-    print(f"🚀 Pushing Space: {repo_id}")
-    print(f"   Local dir: {local_dir}")
 
-    # 1. Create the Space repo (Docker SDK type)
-    try:
-        create_repo(
-            repo_id,
-            repo_type="space",
-            space_sdk="docker",
-            exist_ok=True,
+def push(api: HfApi, key: str, sync_secrets: bool) -> None:
+    spec = SPACES[key]
+    repo_id = f"{USERNAME}/{spec['repo_name']}"
+    print(f"\n🚀 {repo_id}")
+    api.create_repo(repo_id, repo_type="space", space_sdk="docker", exist_ok=True)
+    api.upload_folder(
+        repo_id=repo_id,
+        repo_type="space",
+        folder_path=spec["local_dir"],
+        ignore_patterns=spec.get("ignore", [".*"]),
+        commit_message="Deploy from local",
+    )
+    if key == "api":
+        # Only the figures cited in RAG answers, not the 60MB of page renders.
+        api.upload_folder(
+            repo_id=repo_id, repo_type="space",
+            folder_path=os.path.join(HERE, "app", "data", "parsed_docs"),
+            path_in_repo="app/data/parsed_docs",
+            allow_patterns=["*-picture-*.png"],
+            commit_message="Deploy RAG figures",
         )
-        print(f"   ✅ Space repo created/exists: https://huggingface.co/spaces/{repo_id}")
-    except Exception as e:
-        print(f"   ⚠️  Repo creation: {e}")
+    if "readme" in spec:
+        api.upload_file(path_or_fileobj=spec["readme"].encode(), path_in_repo="README.md",
+                        repo_id=repo_id, repo_type="space")
+    if sync_secrets and key == "api":
+        env = read_env(os.path.join(HERE, "..", ".env"))
+        for name in BACKEND_SECRETS:
+            if env.get(name):
+                api.add_space_secret(repo_id, name, env[name])
+                print(f"   🔑 {name}")
+    print(f"   ✅ https://huggingface.co/spaces/{repo_id}  (build takes ~5-10 min)")
 
-    # 2. Upload all files from the local directory
-    files_to_upload = []
-    for filename in os.listdir(local_dir):
-        filepath = os.path.join(local_dir, filename)
-        if os.path.isfile(filepath) and not filename.startswith('.'):
-            files_to_upload.append((filepath, filename))
 
-    print(f"   📁 Files to upload: {[f[1] for f in files_to_upload]}")
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("spaces", nargs="*", help=f"any of: {', '.join(SPACES)} (default: all)")
+    parser.add_argument("--secrets", action="store_true", help="copy backend keys from ../.env into the api Space")
+    parser.add_argument("--restart", action="store_true", help="factory-restart instead of uploading")
+    args = parser.parse_args()
+    unknown = set(args.spaces) - set(SPACES)
+    if unknown:
+        parser.error(f"unknown space(s): {', '.join(sorted(unknown))}")
+    api = HfApi()
 
-    for filepath, filename in files_to_upload:
-        size_kb = os.path.getsize(filepath) / 1024
-        print(f"   ⬆️  Uploading {filename} ({size_kb:.1f} KB)...")
-        try:
-            api.upload_file(
-                path_or_fileobj=filepath,
-                path_in_repo=filename,
-                repo_id=repo_id,
-                repo_type="space",
-            )
-            print(f"   ✅ {filename} uploaded")
-        except Exception as e:
-            print(f"   ❌ Failed to upload {filename}: {e}")
-            return False
-
-    print(f"   🎉 Space deployed! → https://huggingface.co/spaces/{repo_id}")
-    return True
+    for key in args.spaces or list(SPACES):
+        if args.restart:
+            repo_id = f"{USERNAME}/{SPACES[key]['repo_name']}"
+            api.restart_space(repo_id, factory_reboot=True)
+            print(f"🔄 Restarting {repo_id}")
+        else:
+            push(api, key, args.secrets)
 
 
 if __name__ == "__main__":
-    print("🚀 Pushing MedSage HuggingFace Spaces")
-    print(f"   Account: {USERNAME}")
-
-    results = []
-    for space in SPACES:
-        ok = push_space(space)
-        results.append((space["repo_name"], ok))
-
-    print(f"\n{'='*60}")
-    print("📊 Results:")
-    for name, ok in results:
-        status = "✅" if ok else "❌"
-        print(f"  {status} https://huggingface.co/spaces/{USERNAME}/{name}")
-
-    if all(ok for _, ok in results):
-        print("\n✅ All Spaces pushed successfully!")
-        print("\n⏳ HuggingFace will now build the Docker containers.")
-        print("   This typically takes 5-10 minutes per Space.")
-        print(f"\n   Monitor builds at:")
-        for space in SPACES:
-            print(f"   → https://huggingface.co/spaces/{USERNAME}/{space['repo_name']}")
-    else:
-        print("\n⚠️  Some pushes failed. Check errors above.")
+    main()

@@ -8,6 +8,8 @@ import time
 from enum import Enum
 from groq import Groq
 
+from app.core.llm_models import GROQ_MODEL
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,7 +35,7 @@ class ModelManager:
         },
         ModelTier.SECONDARY: {
             "provider": "groq",
-            "model": "llama-3.3-70b-versatile",
+            "model": GROQ_MODEL,
             "max_tokens": 2000,
             "temperature": 0.7
         },

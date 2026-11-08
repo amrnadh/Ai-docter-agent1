@@ -163,8 +163,8 @@ health-report/
 backend/venv/
 venv/
 
-# RAG vector database (regenerated at runtime)
-backend/app/data/docs_db/
+# RAG index (app/data/qdrant_db + docs_db) is committed: rebuild with
+# python -m app.scripts.ingest_rag --reset
 
 # Skin lesion model directory
 backend/app/agents/image_analysis_agent/skin_lesion_agent/models/
