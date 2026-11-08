@@ -84,7 +84,8 @@ async def predict_brain_tumor(
         # Run prediction
         result = detector.predict(contents)
         if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
+            # RuntimeError maps to a 503 below, so the UI can show "model waking up"
+            raise RuntimeError(result["error"])
 
         # Transform flat Space result back to nested structure expected by frontend
         diagnosis = result.get("prediction", "Unknown")

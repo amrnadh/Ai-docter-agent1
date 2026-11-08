@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 # Import the agent decision system
 from app.agents.agent_decision import process_query
 from app.agents.config import Config
+from app.core.llm_models import GEMINI_MODEL
 
 router = APIRouter()
 
@@ -641,7 +642,7 @@ async def summarize_session(
     # Init Gemini
     try:
         llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model=GEMINI_MODEL,
             api_key=os.getenv("GOOGLE_API_KEY"),
             temperature=0.3
         )

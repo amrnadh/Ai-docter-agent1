@@ -1,3 +1,6 @@
+import base64
+import os
+
 import httpx
 import jwt
 from jwt import PyJWK
@@ -8,6 +11,25 @@ security = HTTPBearer()
 
 # Cache for JWKS (Issuer -> Keys)
 jwks_cache = {}
+
+
+def _expected_issuer() -> str:
+    """The only token issuer we trust: our own Clerk instance.
+
+    Uses CLERK_ISSUER if set, otherwise derives it from the publishable key
+    (pk_test_/pk_live_ + base64("<frontend-api-host>$")), so rotating Clerk
+    keys automatically updates the trusted issuer.
+    """
+    explicit = os.getenv("CLERK_ISSUER", "").strip().rstrip("/")
+    if explicit:
+        return explicit
+    pk = os.getenv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "") or os.getenv("CLERK_PUBLISHABLE_KEY", "")
+    try:
+        encoded = pk.split("_", 2)[2]
+        host = base64.b64decode(encoded + "=" * (-len(encoded) % 4)).decode().rstrip("$")
+        return f"https://{host}"
+    except Exception:
+        raise ValueError("Set CLERK_ISSUER or NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY on the backend")
 
 async def fetch_jwks(issuer: str) -> dict:
     """Fetch JWKS from issuer using httpx (handles SSL better on macOS)."""
@@ -46,6 +68,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
         
         if not issuer:
             raise ValueError("Missing 'iss' claim in token")
+        if issuer.rstrip("/") != _expected_issuer():
+            raise ValueError("Token issuer is not this app's Clerk instance")
             
         # 2. Get or Fetch JWKS
         if issuer not in jwks_cache:
@@ -61,6 +85,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
             token,
             key=signing_key,
             algorithms=["RS256"],
+            issuer=issuer,
+            leeway=10,
             options={"verify_exp": True}
         )
         return payload

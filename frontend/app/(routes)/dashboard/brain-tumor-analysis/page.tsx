@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
+import ModelStatusBanner from '@/components/ModelStatusBanner'
 import axios from 'axios'
 
 type BrainTumorScanResult = {
@@ -259,7 +260,7 @@ export default function BrainTumorAnalysis() {
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-100 selection:bg-blue-600/30 font-sans pb-12">
             {/* Header */}
-            <div className="bg-white/90 dark:bg-[#111111]/90 backdrop-blur-md border-b border-gray-200/80 dark:border-white/10 sticky top-0 z-10 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.1)] shadow-[#0f172a]/20">
+            <div className="bg-white/90 dark:bg-[#111111]/90 backdrop-blur-md border-b border-gray-200/80 dark:border-white/10 sticky top-14 lg:top-0 z-10 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.1)] shadow-[#0f172a]/20">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/dashboard">
@@ -294,6 +295,7 @@ export default function BrainTumorAnalysis() {
                 {/* Main Content Area */}
                 <div className={`flex-1 transition-all duration-300`}>
 
+                    <div className="mb-4"><ModelStatusBanner space="pytorch" /></div>
                     {/* ═══ Row 1: Upload + Prediction ═══ */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
 

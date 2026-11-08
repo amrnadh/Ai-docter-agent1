@@ -8,6 +8,7 @@ from app.core.auth import get_current_user
 from app.models import ChatSession, ChatMessage, User
 
 from app.schemas import SyncConversationRequest
+from app.core.llm_models import GEMINI_MODEL
 
 router = APIRouter()
 
@@ -198,7 +199,7 @@ async def generate_session_summary(
         import os
         
         llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
+            model=GEMINI_MODEL,
             api_key=os.getenv("GOOGLE_API_KEY"),
             temperature=0.3
         )

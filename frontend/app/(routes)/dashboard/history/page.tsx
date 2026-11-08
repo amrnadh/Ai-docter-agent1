@@ -63,29 +63,29 @@ export default function HistoryPage() {
                 return {
                     icon: Mic,
                     label: 'Voice Consultation',
-                    color: 'bg-blue-100 text-blue-700',
+                    color: 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300',
                     iconColor: 'text-blue-500'
                 }
             case 'medical_assistant':
                 return {
                     icon: Bot,
                     label: 'Medical Assistant',
-                    color: 'bg-purple-100 text-purple-700',
+                    color: 'bg-purple-100 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300',
                     iconColor: 'text-purple-500'
                 }
             case 'report_analysis':
                 return {
                     icon: FileText,
                     label: 'Report Analysis',
-                    color: 'bg-green-100 text-green-700',
+                    color: 'bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300',
                     iconColor: 'text-green-500'
                 }
             default:
                 return {
                     icon: Clock,
                     label: 'Consultation',
-                    color: 'bg-gray-100 text-gray-700',
-                    iconColor: 'text-gray-500'
+                    color: 'bg-gray-100 dark:bg-white/[0.07] text-gray-700 dark:text-gray-200',
+                    iconColor: 'text-gray-500 dark:text-gray-400'
                 }
         }
     }
@@ -115,8 +115,8 @@ export default function HistoryPage() {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-800">History & Reports</h1>
-                        <p className="text-sm text-gray-500">View past consultations and sessions</p>
+                        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">History & Reports</h1>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">View past consultations and sessions</p>
                     </div>
                 </div>
             </div>
@@ -134,7 +134,7 @@ export default function HistoryPage() {
                     />
                 </div>
                 <div className="flex items-center gap-2">
-                    <Filter className="w-4 h-4 text-gray-500" />
+                    <Filter className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     <select
                         value={filterType}
                         onChange={(e) => setFilterType(e.target.value)}
@@ -157,8 +157,8 @@ export default function HistoryPage() {
             ) : filteredSessions.length === 0 ? (
                 <div className="text-center py-12">
                     <Clock className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-700">No sessions found</h3>
-                    <p className="text-gray-500 mt-1">
+                    <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200">No sessions found</h3>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">
                         {searchQuery || filterType !== 'all'
                             ? 'Try adjusting your search or filters'
                             : 'Start a consultation to see your history here'}
@@ -175,7 +175,7 @@ export default function HistoryPage() {
                                 key={session.id}
                                 href={`/dashboard/history/${session.id}`}
                             >
-                                <div className="bg-white border rounded-xl p-4 hover:shadow-md transition-all hover:border-blue-200 group">
+                                <div className="bg-white dark:bg-[#141414] border rounded-xl p-4 hover:shadow-md transition-all hover:border-blue-200 dark:hover:border-blue-500/30 group">
                                     <div className="flex items-start gap-4">
                                         <div className={`w-10 h-10 rounded-lg ${typeInfo.color.split(' ')[0]} flex items-center justify-center flex-shrink-0`}>
                                             <TypeIcon className={`w-5 h-5 ${typeInfo.iconColor}`} />
@@ -183,7 +183,7 @@ export default function HistoryPage() {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-start justify-between gap-4">
                                                 <div>
-                                                    <h3 className="font-medium text-gray-800 line-clamp-1">
+                                                    <h3 className="font-medium text-gray-800 dark:text-gray-100 line-clamp-1">
                                                         {session.title || 'Untitled Session'}
                                                     </h3>
                                                     <div className="flex items-center gap-2 mt-1">
@@ -200,7 +200,7 @@ export default function HistoryPage() {
                                                 <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
                                             </div>
                                             {session.summary && (
-                                                <p className="text-sm text-gray-500 mt-2 line-clamp-2">
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">
                                                     {session.summary}
                                                 </p>
                                             )}

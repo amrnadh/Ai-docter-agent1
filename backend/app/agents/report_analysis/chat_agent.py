@@ -10,6 +10,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
 from .prompts import CHAT_SYSTEM_PROMPT
+from app.core.llm_models import GROQ_MODEL, make_embeddings
 
 
 class ReportChatAgent:
@@ -20,17 +21,14 @@ class ReportChatAgent:
 
     def __init__(self):
         api_key = os.getenv("GOOGLE_API_KEY")
-        self.embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/text-embedding-004", 
-            google_api_key=api_key
-        )
+        self.embeddings = make_embeddings(api_key)
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=200
         )
         api_key = os.getenv("GROQ_API_KEY")
         self.client = Groq(api_key=api_key) if api_key else None
-        self.model_name = "llama-3.3-70b-versatile"
+        self.model_name = GROQ_MODEL
         
         # Cache for vector stores by report_id
         self._vector_stores: Dict[str, FAISS] = {}

@@ -19,7 +19,7 @@ export default function VoiceConsultationPage() {
                         Get personalized medical advice through real-time voice consultations with specialized AI health agents.
                     </p>
                     <AddNewSession hideTrigger={true}>
-                        <button className="mt-2 flex items-center justify-center gap-2 bg-white text-[#6b42f5] font-semibold px-6 py-4 rounded-xl hover:bg-gray-100 transition-all shadow-md active:scale-95 duration-200">
+                        <button className="mt-2 flex items-center justify-center gap-2 bg-white dark:bg-[#141414] text-[#6b42f5] font-semibold px-6 py-4 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-all shadow-md active:scale-95 duration-200">
                             <Mic className="w-5 h-5 text-[#6b42f5]" />
                             Start Instant Consultation
                         </button>

@@ -10,6 +10,7 @@ from app.core.config import get_settings
 from app.core.auth import get_current_user
 from app.models import ChatSession, ChatMessage, User
 from app.schemas import ChatRequest, SuggestDoctorRequest
+from app.core.llm_models import GEMINI_MODEL
 
 settings = get_settings()
 router = APIRouter()
@@ -135,7 +136,7 @@ Rules:
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model=GEMINI_MODEL,
             contents=prompt,
         )
         suggested = response.text.strip().strip('"').strip("'")
@@ -260,7 +261,7 @@ async def chat_endpoint(
         contents.append(types.Content(role="user", parts=[types.Part.from_text(text=user_msg_content)]))
         
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model=GEMINI_MODEL,
             contents=contents
         )
         ai_text = response.text
